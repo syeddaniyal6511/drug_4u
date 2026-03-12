@@ -1,28 +1,32 @@
+<?php
+require_once('../database/connect_db.php');
+
+?>
 <!DOCTYPE html>
-<html>
-<head>
-<title>Pharmacy System Login</title>
-</head>
+    <html>
+        <head>
+            <title>Pharmacy System Login</title>
+        </head>
 
-<body>
+        <body>
 
-<h2>Pharmacy System Login</h2>
+            <h2>Pharmacy System Login</h2>
 
-<form action="authenticate.php" method="POST">
+            <form action="authenticate.php" method="POST">
 
-<label>Username:</label>
-<input type="text" name="username" required>
+            <label>Username:</label>
+            <input type="text" name="username" required>
 
-<br><br>
+            <br><br>
 
-<label>Password:</label>
-<input type="password" name="password" required>
+            <label>Password:</label>
+            <input type="password" name="password" required>
 
-<br><br>
+            <br><br>
 
-<button type="submit">Login</button>
+            <button type="submit">Login</button>
 
-</form>
+            </form>
 
-</body>
-</html>
+        </body>
+    </html>
