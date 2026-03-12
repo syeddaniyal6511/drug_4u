@@ -10,3 +10,6 @@ OR die
 #set encoding to match PHP script encoding
 mysqli_set_charset($dbc, 'utf8');
 
+require_once __DIR__ . '/run_schema.php';
+run_create_tables($dbc);
+
