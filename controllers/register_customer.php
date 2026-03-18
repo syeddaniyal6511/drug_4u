@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $gender    = trim($_POST['gender'] ?? '');
     $dob       = trim($_POST['dob'] ?? '');
     $postcode  = trim($_POST['postcode'] ?? '');
+    $allergies_raw = trim($_POST['allergies'] ?? '');
 
     // --- Validate ---
     if ($firstname === '') $errors[] = 'First name is required.';
@@ -54,7 +55,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- If valid, insert into DB ---
     if (!$errors) {
-            new_customer($firstname, $lastname, $gender, $dob, $postcode);
+            // Parse allergies: accept comma-separated list and remove empty items
+            $allergies = [];
+            if ($allergies_raw !== '') {
+                // split on commas, semicolons or newlines
+                $parts = preg_split('/[\r\n,;]+/', $allergies_raw);
+                foreach ($parts as $p) {
+                    $d = trim($p);
+                    if ($d !== '') {
+                        // limit description length to 1000 characters to be safe
+                        $allergies[] = mb_substr($d, 0, 1000);
+                    }
+                }
+            }
+
+            $result = new_customer($firstname, $lastname, $gender, $dob, $postcode, $allergies);
+            if (is_array($result) && ($result['success'] ?? false)) {
+                $success = 'Customer registered successfully with ID: ' . htmlspecialchars((string)$result['customerID'], ENT_QUOTES, 'UTF-8');
+                // reset fields
+                $firstname = $lastname = $gender = $dob = $postcode = $allergies_raw = '';
+            } else {
+                $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred while saving the customer.';
+            }
     }
 }
 ?>
@@ -130,6 +152,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="postcode">Postcode</label>
             <input id="postcode" name="postcode" type="text" inputmode="numeric" pattern="\d+"
                    value="<?= isset($postcode) ? htmlspecialchars($postcode, ENT_QUOTES, 'UTF-8') : '' ?>" required>
+        </div>
+    </div>
+
+    <div class="row full">
+        <div>
+            <label for="allergies">Allergies (optional)</label>
+            <textarea id="allergies" name="allergies" rows="3" placeholder="List allergies (comma, semicolon or newline separated)"><?= isset($allergies_raw) ? htmlspecialchars($allergies_raw, ENT_QUOTES, 'UTF-8') : '' ?></textarea>
         </div>
     </div>
 
