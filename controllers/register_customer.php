@@ -18,9 +18,9 @@ $success = null;
 // --- Handle POST submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF check (optional but recommended)
-    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-        $errors[] = 'Invalid form token. Please refresh and try again.';
-    }
+    #if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+    #    $errors[] = 'Invalid form token. Please refresh and try again.';
+    #}
 
     // Collect and trim inputs
     $firstname = trim($_POST['firstname'] ?? '');

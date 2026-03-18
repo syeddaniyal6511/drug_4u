@@ -1,11 +1,12 @@
 <?php
-include_once "./connect_db.php";
+#include_once "./connect_db.php";
 
 function new_customer(string $firstname, string $lastname, string $gender, string $dob, int $postcode){
+    require __DIR__ . '/connect_db.php';
     try {
 
 
-            $stmt = $dbc->prepare("
+            $stmt = $objPdo->prepare("
                 INSERT INTO customer (firstname, lastname, gender, dob, postcode)
                 VALUES (:firstname, :lastname, :gender, :dob, :postcode)
             ");
@@ -18,11 +19,11 @@ function new_customer(string $firstname, string $lastname, string $gender, strin
                 ':postcode'  => $postcode,   // stored as digits (string ok for BIGINT)
             ]);
 
-            $success = 'Customer registered successfully with ID: ' . $dbc->lastInsertId();
+            $success = 'Customer registered successfully with ID: ' . $objPdo->lastInsertId();
             // Reset form fields after success
             $firstname = $lastname = $gender = $dob = $postcode = '';
             // Rotate CSRF token after successful submission
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+            #$_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 
         } catch (PDOException $e) {
             // You may want to log $e->getMessage() rather than echo it
