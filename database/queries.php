@@ -1,7 +1,7 @@
 <?php
 include_once "./connect_db.php";
 
-function new_customer(firstname, lastname, gender, dob, postcode){
+function new_customer(string $firstname, string $lastname, string $gender, string $dob, int $postcode){
     try {
 
 

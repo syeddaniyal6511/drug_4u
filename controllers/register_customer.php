@@ -4,7 +4,7 @@
  * - One file: shows form + handles POST
  * - Uses PDO + prepared statements
  *******************************/
-require "../database/queries.php";
+include "../database/queries.php";
 
 // (Optional) basic CSRF token support for the form
 //session_start();
