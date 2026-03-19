@@ -60,4 +60,25 @@ function insert_allergy(int $customerID, string $description, $drugID = null)
     ]);
 }
 
+
+function new_drug(string $name,int $basic_unit, int $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit){
+    $query = "INSERT INTO drug 
+                    (name, basic_unit, collective_unit, no_of_basic_units_in_collective_unit, age_limit)
+                  VALUES (?, ?, ?, ?, ?)";
+
+        $params = [
+            $name,
+            $basic_unit,
+            $collective_unit,
+            $no_of_basic_units_in_collective_unit,
+            $age_limit
+        ];
+
+        if (executeQuery($query, $params)) {
+            $success = "Drug added successfully!";
+        } else {
+            $errors[] = "Database error: failed to insert drug.";
+        }
+}
+
 ?>
