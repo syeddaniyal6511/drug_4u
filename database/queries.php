@@ -81,4 +81,84 @@ function new_drug(string $name,int $basic_unit, int $collective_unit, float $no_
         }
 }
 
+function new_order(int $customerID, int $userID, array $items, string $status = 'pending'){
+    // items: array of ['drugID' => int, 'price' => float]
+    require __DIR__ . '/connect_db.php';
+    try {
+        // Start transaction
+        $objPdo->beginTransaction();
+
+        // validate status server-side
+        $allowedStatuses = ['pending','paid','cancelled'];
+        if (!in_array($status, $allowedStatuses, true)) {
+            $status = 'pending';
+        }
+
+        // Insert order (use provided status)
+        $stmt = $objPdo->prepare("INSERT INTO order_ (status, created_at, customerID, userID) VALUES (:status, NOW(), :customerID, :userID)");
+        $stmt->execute([
+            ':status' => $status,
+            ':customerID' => $customerID,
+            ':userID' => $userID,
+        ]);
+        $orderId = (int)$objPdo->lastInsertId();
+
+        // Insert order items (store price) and decrement stock quantities for each drug
+        $itemStmt = $objPdo->prepare("INSERT INTO order_item (orderID, price) VALUES (:orderID, :price)");
+        $selectStockStmt = $objPdo->prepare("SELECT stockID, quantity FROM stock WHERE drugID = :drugID AND quantity > 0 ORDER BY expiry_date ASC, stockID ASC FOR UPDATE");
+        $updateStockStmt = $objPdo->prepare("UPDATE stock SET quantity = :quantity WHERE stockID = :stockID");
+
+        foreach ($items as $it) {
+            $drugID = isset($it['drugID']) ? (int)$it['drugID'] : 0;
+            $quantityNeeded = isset($it['quantity']) ? (int)$it['quantity'] : 0;
+            $price = isset($it['price']) && is_numeric($it['price']) ? (float)$it['price'] : 0.0;
+
+            // insert order_item row (keeps existing schema: price stored)
+            $itemStmt->execute([
+                ':orderID' => $orderId,
+                ':price' => $price,
+            ]);
+
+            // If no drugID or no quantity requested, skip stock update
+            if ($drugID <= 0 || $quantityNeeded <= 0) {
+                continue;
+            }
+
+            // Lock stock rows for this drug to safely decrement quantities
+            $selectStockStmt->execute([':drugID' => $drugID]);
+            $stockRows = $selectStockStmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $available = 0;
+            foreach ($stockRows as $sr) {
+                $available += (int)$sr['quantity'];
+            }
+
+            if ($available < $quantityNeeded) {
+                // not enough stock -> rollback and return error
+                throw new PDOException(sprintf('Insufficient stock for drugID %d: requested %d, available %d', $drugID, $quantityNeeded, $available));
+            }
+
+            // consume from stock rows (FEFO: earliest expiry first)
+            $toConsume = $quantityNeeded;
+            foreach ($stockRows as $sr) {
+                if ($toConsume <= 0) break;
+                $take = min((int)$sr['quantity'], $toConsume);
+                $newQty = (int)$sr['quantity'] - $take;
+                $updateStockStmt->execute([':quantity' => $newQty, ':stockID' => $sr['stockID']]);
+                $toConsume -= $take;
+            }
+        }
+
+        // Commit transaction
+        $objPdo->commit();
+        return ['success' => true, 'orderID' => $orderId];
+    } catch (PDOException $e) {
+        // Rollback on error
+        if ($objPdo->inTransaction()) {
+            $objPdo->rollBack();
+        }
+        return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
 ?>

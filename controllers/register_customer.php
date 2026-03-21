@@ -6,21 +6,17 @@
  *******************************/
 include "../database/queries.php";
 
-// (Optional) basic CSRF token support for the form
-//session_start();
-//if (empty($_SESSION['csrf_token'])) {
-//    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-//}
+//session userid check (optional, depends on your auth system)
+    if (!isset($_SESSION['user_id'])) {
+        $errors[] = 'User not logged in.';
+    }
 
 $errors  = [];
 $success = null;
 
 // --- Handle POST submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // CSRF check (optional but recommended)
-    #if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
-    #    $errors[] = 'Invalid form token. Please refresh and try again.';
-    #}
+    
 
     // Collect and trim inputs
     $firstname = trim($_POST['firstname'] ?? '');
@@ -74,6 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $success = 'Customer registered successfully with ID: ' . htmlspecialchars((string)$result['customerID'], ENT_QUOTES, 'UTF-8');
                 // reset fields
                 $firstname = $lastname = $gender = $dob = $postcode = $allergies_raw = '';
+                // go back to dashboard
+                    header("Location: ../pages/dashboard.php");
+                    exit();
             } else {
                 $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred while saving the customer.';
             }

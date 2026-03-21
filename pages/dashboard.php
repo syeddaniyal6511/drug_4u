@@ -21,6 +21,10 @@ if (!isset($_SESSION['user_id'])) {
 
 <p>You are logged in.</p>
 
+<p><a href="../controllers/register_customer.php">Register a New Customer</a></p>
+<p><a href="./newdrug.php">Add a New Drug</a></p>
+<p><a href="./new_order.php">Create a New Order</a></p>
+
 <a href="logout.php">Logout</a>
 
 </body>
