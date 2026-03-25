@@ -12,7 +12,7 @@ require_once('../database/connect_db.php');
 
             <h2>Pharmacy System Login</h2>
 
-            <form action="authenticate.php" method="POST">
+            <form action="../controllers/authenticate.php" method="POST">
 
             <label>Username:</label>
             <input type="text" name="username" required>
