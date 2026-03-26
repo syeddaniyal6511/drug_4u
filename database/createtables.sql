@@ -74,3 +74,10 @@ CREATE TABLE IF NOT EXISTS invoice (
 	status enum('pending', 'paid', 'cancelled'),
 	 FOREIGN KEY (orderID) REFERENCES order_(orderID)
 );
+CREATE TABLE password_resets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    token VARCHAR(255),
+    expires_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
