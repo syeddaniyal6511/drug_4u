@@ -1,0 +1,334 @@
+   <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --surface: #181c27;
+      --border: rgba(255,255,255,0.08);
+      --border-focus: rgba(255,255,255,0.28);
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --accent: #4f8ef7;
+      --accent-hover: #3a78e8;
+      --error-bg: rgba(220,53,69,0.12);
+      --error-border: rgba(220,53,69,0.4);
+      --error-text: #f87171;
+      --success: #34d399;
+      --radius: 10px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      font-family: 'DM Sans', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(79,142,247,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 50% at 80% 90%, rgba(79,142,247,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 400px;
+      padding: 40px 36px;
+      background: var(--surface);
+      border: 0.5px solid var(--border);
+      border-radius: 16px;
+      position: relative;
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo {
+      width: 36px; height: 36px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 24px;
+    }
+    .logo svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .field { margin-bottom: 16px; }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    input::placeholder { color: var(--muted); }
+    input:focus {
+      border-color: var(--border-focus);
+      background: rgba(255,255,255,0.06);
+    }
+    input.has-error { border-color: var(--error-border); }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 42px; }
+    .toggle-pw {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); padding: 0; line-height: 1;
+    }
+    .toggle-pw:hover { color: var(--text); }
+
+    #error-msg {
+      display: none;
+      background: var(--error-bg);
+      border: 0.5px solid var(--error-border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--error-text);
+      margin-bottom: 16px;
+    }
+    #error-msg.visible { display: flex; align-items: center; gap: 8px; }
+
+    .btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      position: relative;
+      margin-top: 4px;
+    }
+    .btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn:active:not(:disabled) { transform: scale(0.98); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner { display: block; }
+
+    .success-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      padding: 16px 0;
+    }
+    .success-screen.visible { display: flex; }
+
+    .check-circle {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      background: rgba(52,211,153,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      color: var(--success);
+    }
+
+    .mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      word-break: break-all;
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Login form -->
+  <div id="login-form">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to your account</p>
+
+    <div id="error-msg" role="alert">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span id="error-text">Invalid credentials.</span>
+    </div>
+
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="pharmacy1" autocomplete="username" />
+    </div>
+
+    <div class="field">
+      <label for="password">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+        <button class="toggle-pw" type="button" onclick="togglePw()" aria-label="Show password">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn" id="login-btn" onclick="handleLogin()">
+      <span class="btn-text">Sign in</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+  <!-- Success state -->
+  <div class="success-screen" id="success-screen">
+    <div class="check-circle">✓</div>
+    <h1 style="font-size:18px;">Signed in</h1>
+    <p class="subtitle" style="margin:0;">Redirecting…</p>
+  </div>
+
+</div>
+
+<!-- ✅ Single script block, placed at end of body so DOM is ready -->
+<script>
+  function showError(msg) {
+    const box = document.getElementById('error-msg');
+    document.getElementById('error-text').textContent = msg;
+    box.classList.add('visible');
+    ['username', 'password'].forEach(id => document.getElementById(id).classList.add('has-error'));
+  }
+
+  function clearError() {
+    document.getElementById('error-msg').classList.remove('visible');
+    ['username', 'password'].forEach(id => document.getElementById(id).classList.remove('has-error'));
+  }
+
+  function setLoading(on) {
+    const btn = document.getElementById('login-btn');
+    btn.classList.toggle('loading', on);
+    btn.disabled = on;
+  }
+
+  function togglePw() {
+    const inp = document.getElementById('password');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+  }
+
+  async function handleLogin() {
+    clearError();
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!username || !password) {
+      showError('Please fill in all fields.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await fetch('../controllers/authenticate.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      // Catch non-JSON responses (e.g. PHP fatal errors returning HTML)
+      const text = await response.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        console.error('PHP returned non-JSON:', text);
+        showError('Server error. Check PHP logs.');
+        setLoading(false);
+        return;
+      }
+
+      if (data.success) {
+        sessionStorage.setItem('auth_token', data.token);
+        sessionStorage.setItem('user_id', data.user_id);
+
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('success-screen').classList.add('visible');
+
+        setTimeout(() => { window.location.href = 'dashboard.php'; }, 1200);
+      } else {
+        showError(data.message || 'Invalid username or password.');
+      }
+
+    } catch (error) {
+      // This only fires for true network failures (server down, wrong URL, CORS)
+      console.error('Fetch error:', error);
+      showError('Cannot reach server. Is /pharmacy_system/api/login.php accessible?');
+    }
+
+    setLoading(false);
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+
+</body>
+</html>
