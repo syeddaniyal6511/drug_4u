@@ -104,7 +104,7 @@ function new_order(int $customerID, int $userID, array $items, string $status = 
         $orderId = (int)$objPdo->lastInsertId();
 
         // Insert order items (store price) and decrement stock quantities for each drug
-        $itemStmt = $objPdo->prepare("INSERT INTO order_item (orderID, price) VALUES (:orderID, :price)");
+        $itemStmt = $objPdo->prepare("INSERT INTO order_item (orderID, drugID, price) VALUES (:orderID, :drugID, :price)");
         $selectStockStmt = $objPdo->prepare("SELECT stockID, quantity FROM stock WHERE drugID = :drugID AND quantity > 0 ORDER BY expiry_date ASC, stockID ASC FOR UPDATE");
         $updateStockStmt = $objPdo->prepare("UPDATE stock SET quantity = :quantity WHERE stockID = :stockID");
 
@@ -116,6 +116,7 @@ function new_order(int $customerID, int $userID, array $items, string $status = 
             // insert order_item row (keeps existing schema: price stored)
             $itemStmt->execute([
                 ':orderID' => $orderId,
+                ':drugID' => $drugID,
                 ':price' => $price,
             ]);
 
