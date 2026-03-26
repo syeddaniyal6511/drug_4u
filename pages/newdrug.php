@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // reset fields
                 $name = $basic_unit = $collective_unit = $no_of_basic_units_in_collective_unit = $age_limit = '';
             } else {
-                $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred while saving the customer.';
+                $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred while saving the drug.';
             }
     }
 }

@@ -62,23 +62,21 @@ function insert_allergy(int $customerID, string $description, $drugID = null)
 
 
 function new_drug(string $name,int $basic_unit, int $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit){
-    $query = "INSERT INTO drug 
+    require __DIR__ . '/connect_db.php';
+    $stmt = $objPdo->prepare("INSERT INTO drug 
                     (name, basic_unit, collective_unit, no_of_basic_units_in_collective_unit, age_limit)
-                  VALUES (?, ?, ?, ?, ?)";
+                  VALUES (:name, :basic_unit, :collective_unit, :no_of_basic_units_in_collective_unit, :age_limit)");
 
-        $params = [
-            $name,
-            $basic_unit,
-            $collective_unit,
-            $no_of_basic_units_in_collective_unit,
-            $age_limit
-        ];
+    return $stmt->execute([
+            ':name'=>$name,
+            ':basic_unit'=>$basic_unit,
+            ':collective_unit'=>$collective_unit,
+            ':no_of_basic_units_in_collective_unit'=>$no_of_basic_units_in_collective_unit,
+            ':age_limit'=>$age_limit
+    ]);
+        
 
-        if (executeQuery($query, $params)) {
-            $success = "Drug added successfully!";
-        } else {
-            $errors[] = "Database error: failed to insert drug.";
-        }
+        
 }
 
 function new_order(int $customerID, int $userID, array $items, string $status = 'pending'){
