@@ -1,3 +1,4 @@
+<p><a href="./dashboard.php">Back to dashboard</a></p>
 <?php
 // new_order.php
 // Page to register cashier orders matching the order_ and order_item tables

@@ -161,4 +161,132 @@ function new_order(int $customerID, int $userID, array $items, string $status = 
     }
 }
 
+
+function presc_history(int $customerID){
+   
+    require __DIR__ . '/connect_db.php';
+
+    try {
+        // Query all orders with customer & items
+        $stmt = $objPdo->prepare("
+            SELECT o.orderID, o.status, o.created_at, c.firstname, c.lastname, d.name AS drug_name, oi.price AS item_price 
+            FROM order_ o 
+            JOIN customer c ON o.customerID = c.customerID 
+            JOIN order_item oi ON o.orderID = oi.orderID 
+            JOIN drug d ON oi.drugID = d.drugID 
+            WHERE c.customerID = :customerID 
+            ORDER BY o.orderID DESC, oi.order_itemID ASC;
+        ");
+        $stmt->execute([
+            ':customerID' => $customerID,
+        ]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo "<h2>Order History</h2>";
+
+        if (!$rows) {
+            echo "No orders found.";
+            exit;
+        }
+
+        $currentOrder = null;
+
+        foreach ($rows as $row) {
+
+            // When encountering a new order ID → print header
+            if ($currentOrder !== $row['orderID']) {
+                if ($currentOrder !== null) {
+                    echo "</ul>"; // Close previous order's items
+                }
+
+                $currentOrder = $row['orderID'];
+
+                echo "<hr>";
+                echo "<h3>Order #{$row['orderID']}</h3>";
+                echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
+                echo "Status: {$row['status']}<br>";
+                echo "Created: {$row['created_at']}<br>";
+                echo "<strong>Items:</strong>";
+                echo "<ul>";
+            }
+
+            // Print each item
+            echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
+        }
+
+        echo "</ul>"; // Close last order item list
+
+    } catch (PDOException $e) {
+        echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+
+}
+
+function get_all_customers() {
+    require __DIR__ . '/connect_db.php';
+
+    $stmt = $objPdo->prepare("SELECT customerID, firstname, lastname FROM customer ORDER BY firstname ASC");
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function all_presc_history(){
+   
+    require __DIR__ . '/connect_db.php';
+
+    try {
+        // Query all orders with customer & items
+        $stmt = $objPdo->prepare("
+            SELECT o.orderID, o.status, o.created_at, c.firstname, c.lastname, d.name AS drug_name, oi.price AS item_price 
+            FROM order_ o 
+            JOIN customer c ON o.customerID = c.customerID 
+            JOIN order_item oi ON o.orderID = oi.orderID 
+            JOIN drug d ON oi.drugID = d.drugID 
+            ORDER BY o.orderID DESC, oi.order_itemID ASC;
+        ");
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        echo "<h2>Order History</h2>";
+
+        if (!$rows) {
+            echo "No orders found.";
+            exit;
+        }
+
+        $currentOrder = null;
+
+        foreach ($rows as $row) {
+
+            // When encountering a new order ID → print header
+            if ($currentOrder !== $row['orderID']) {
+                if ($currentOrder !== null) {
+                    echo "</ul>"; // Close previous order's items
+                }
+
+                $currentOrder = $row['orderID'];
+
+                echo "<hr>";
+                echo "<h3>Order #{$row['orderID']}</h3>";
+                echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
+                echo "Status: {$row['status']}<br>";
+                echo "Created: {$row['created_at']}<br>";
+                echo "<strong>Items:</strong>";
+                echo "<ul>";
+            }
+
+            // Print each item
+            echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
+        }
+
+        echo "</ul>"; // Close last order item list
+
+    } catch (PDOException $e) {
+        echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";
+    }
+
+}
 ?>

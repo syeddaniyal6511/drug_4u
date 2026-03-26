@@ -1,3 +1,4 @@
+<p><a href="./dashboard.php">Back to dashboard</a></p>
 <?php
 
 include "../database/queries.php";

@@ -61,8 +61,10 @@ CREATE TABLE IF NOT EXISTS order_ (
 CREATE TABLE IF NOT EXISTS order_item (
 	order_itemID INT  PRIMARY KEY AUTO_INCREMENT,
 	orderID INT,
+	drugID INT,
 	price decimal,
-	 FOREIGN KEY (orderID) REFERENCES order_(orderID)
+	 FOREIGN KEY (orderID) REFERENCES order_(orderID),
+	 FOREIGN KEY (drugID) REFERENCES drug(drugID)
 );
 CREATE TABLE IF NOT EXISTS invoice (
 	invoiceID INT  PRIMARY KEY AUTO_INCREMENT,
