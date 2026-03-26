@@ -25,6 +25,7 @@ if (!isset($_SESSION['user_id'])) {
 <p><a href="./newdrug.php">Add a New Drug</a></p>
 <p><a href="./new_order.php">Create a New Order</a></p>
 <p><a href="./prescription_history.php">Review prescription history of a client</a></p>
+<p><a href="./all_orders.php">Review all prescriptions</a></p>
 
 <a href="logout.php">Logout</a>
 
