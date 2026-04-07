@@ -86,18 +86,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register a New Customer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
-        form { max-width: 640px; padding: 1.25rem; border: 1px solid #ddd; border-radius: 8px; }
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-        .row.full { grid-template-columns: 1fr; }
-        label { display: block; margin-bottom: .25rem; font-weight: 600; }
-        input, select { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 6px; }
-        .actions { margin-top: 1rem; }
-        .btn { background: #0a66c2; color: #fff; border: 0; padding: .6rem 1rem; border-radius: 6px; cursor: pointer; }
-        .btn:disabled { opacity: .6; cursor: not-allowed; }
-        .messages { margin-bottom: 1rem; }
-        .error { background: #ffe9e9; color: #b00020; padding: .75rem; border-radius: 6px; margin-bottom: .5rem; }
-        .success { background: #e6ffed; color: #0a7f47; padding: .75rem; border-radius: 6px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 20px; 
+            background-color: #f4f4f4; 
+            color: #333; 
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        form { 
+            max-width: 640px; 
+            padding: 20px; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0 auto;
+        }
+        .row { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 1rem; 
+        }
+        .row.full { 
+            grid-template-columns: 1fr; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: .25rem; 
+            font-weight: 600; 
+            color: #2c3e50;
+        }
+        input, select, textarea { 
+            width: 100%; 
+            padding: .5rem; 
+            border: 1px solid #ddd; 
+            border-radius: 6px; 
+            font-size: 16px;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .actions { 
+            margin-top: 1rem; 
+            text-align: center;
+        }
+        .btn { 
+            background: #3498db; 
+            color: #fff; 
+            border: 0; 
+            padding: .6rem 1rem; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .btn:disabled { 
+            opacity: .6; 
+            cursor: not-allowed; 
+        }
+        .messages { 
+            margin-bottom: 1rem; 
+            max-width: 640px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .error { 
+            background: #ffe9e9; 
+            color: #b00020; 
+            padding: .75rem; 
+            border-radius: 6px; 
+            margin-bottom: .5rem; 
+            border-left: 4px solid #e74c3c;
+        }
+        .success { 
+            background: #e6ffed; 
+            color: #0a7f47; 
+            padding: .75rem; 
+            border-radius: 6px; 
+            border-left: 4px solid #27ae60;
+        }
+    </style>
     </style>
 </head>
 <body>

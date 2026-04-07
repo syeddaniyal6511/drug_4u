@@ -121,15 +121,107 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>New Order - Cashier</title>
     <style>
-        body{font-family: Arial, sans-serif; margin:20px;}
-        .error{color:#a00;}
-        .success{color:#090;}
-        table{width:100%; border-collapse:collapse; margin-bottom:10px;}
-        th,td{padding:6px; border:1px solid #ddd; text-align:left;}
-        .right{text-align:right;}
-        input[type="text"], input[type="number"], select {width:100%;}
-        .small {width:80px;}
-        .add-row {margin-bottom:10px;}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .error {
+            color: #e74c3c;
+            background-color: #faddd7;
+            padding: 10px;
+            border: 1px solid #e74c3c;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            padding: 10px;
+            border: 1px solid #27ae60;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .right {
+            text-align: right;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .small {
+            width: 80px;
+        }
+        .add-row {
+            margin-bottom: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-row:hover {
+            background-color: #2980b9;
+        }
+        button[type="submit"], button[type="reset"] {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button[type="submit"]:hover, button[type="reset"]:hover {
+            background-color: #229954;
+        }
+        button[type="button"] {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button[type="button"]:hover {
+            background-color: #c0392b;
+        }
+        div {
+            margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
     </style>
 </head>
 <body>

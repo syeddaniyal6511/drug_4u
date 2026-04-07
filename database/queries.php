@@ -196,12 +196,12 @@ function presc_history(int $customerID){
             // When encountering a new order ID → print header
             if ($currentOrder !== $row['orderID']) {
                 if ($currentOrder !== null) {
-                    echo "</ul>"; // Close previous order's items
+                    echo "</ul></div>"; // Close previous order's items and div
                 }
 
                 $currentOrder = $row['orderID'];
 
-                echo "<hr>";
+                echo "<div class='order'>";
                 echo "<h3>Order #{$row['orderID']}</h3>";
                 echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
                 echo "Status: {$row['status']}<br>";
@@ -214,7 +214,7 @@ function presc_history(int $customerID){
             echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
         }
 
-        echo "</ul>"; // Close last order item list
+        echo "</ul></div>"; // Close last order item list and div
 
     } catch (PDOException $e) {
         echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";
@@ -263,12 +263,12 @@ function all_presc_history(){
             // When encountering a new order ID → print header
             if ($currentOrder !== $row['orderID']) {
                 if ($currentOrder !== null) {
-                    echo "</ul>"; // Close previous order's items
+                    echo "</ul></div>"; // Close previous order's items and div
                 }
 
                 $currentOrder = $row['orderID'];
 
-                echo "<hr>";
+                echo "<div class='order'>";
                 echo "<h3>Order #{$row['orderID']}</h3>";
                 echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
                 echo "Status: {$row['status']}<br>";
@@ -281,7 +281,7 @@ function all_presc_history(){
             echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
         }
 
-        echo "</ul>"; // Close last order item list
+        echo "</ul></div>"; // Close last order item list and div
 
     } catch (PDOException $e) {
         echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";

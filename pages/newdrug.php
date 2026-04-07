@@ -56,12 +56,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <title>Add New Drug</title>
     <style>
-        body { font-family: Arial; margin: 40px; }
-        .error { color: red; margin-bottom: 10px; }
-        .success { color: green; margin-bottom: 10px; }
-        form { max-width: 400px; }
-        input, label { display: block; width: 100%; margin-bottom: 10px; }
-        input[type='submit'] { width: auto; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .error {
+            color: #e74c3c;
+            background-color: #faddd7;
+            padding: 10px;
+            border: 1px solid #e74c3c;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .success {
+            color: #27ae60;
+            background-color: #d5f4e6;
+            padding: 10px;
+            border: 1px solid #27ae60;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        form {
+            max-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type='submit'] {
+            width: auto;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type='submit']:hover {
+            background-color: #229954;
+        }
     </style>
 </head>
 <body>
