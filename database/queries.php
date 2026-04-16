@@ -61,22 +61,23 @@ function insert_allergy(int $customerID, string $description, $drugID = null)
 }
 
 
-function new_drug(string $name,int $basic_unit, int $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit){
+function new_drug(string $name, int $basic_unit, int $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit): array {
     require __DIR__ . '/connect_db.php';
-    $stmt = $objPdo->prepare("INSERT INTO drug 
-                    (name, basic_unit, collective_unit, no_of_basic_units_in_collective_unit, age_limit)
-                  VALUES (:name, :basic_unit, :collective_unit, :no_of_basic_units_in_collective_unit, :age_limit)");
-
-    return $stmt->execute([
-            ':name'=>$name,
-            ':basic_unit'=>$basic_unit,
-            ':collective_unit'=>$collective_unit,
-            ':no_of_basic_units_in_collective_unit'=>$no_of_basic_units_in_collective_unit,
-            ':age_limit'=>$age_limit
-    ]);
-        
-
-        
+    try {
+        $stmt = $objPdo->prepare("INSERT INTO drug
+                        (name, basic_unit, collective_unit, no_of_basic_units_in_collective_unit, age_limit)
+                      VALUES (:name, :basic_unit, :collective_unit, :no_of_basic_units_in_collective_unit, :age_limit)");
+        $stmt->execute([
+            ':name'                                => $name,
+            ':basic_unit'                          => $basic_unit,
+            ':collective_unit'                     => $collective_unit,
+            ':no_of_basic_units_in_collective_unit' => $no_of_basic_units_in_collective_unit,
+            ':age_limit'                           => $age_limit,
+        ]);
+        return ['success' => true, 'drugID' => (int)$objPdo->lastInsertId()];
+    } catch (PDOException $e) {
+        return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+    }
 }
 
 function new_order(int $customerID, int $userID, array $items, string $status = 'pending'){
@@ -161,65 +162,49 @@ function new_order(int $customerID, int $userID, array $items, string $status = 
 }
 
 
-function presc_history(int $customerID){
-   
+/**
+ * Returns an array of orders (with nested items) for a given customer.
+ */
+function presc_history(int $customerID): array {
     require __DIR__ . '/connect_db.php';
 
     try {
-        // Query all orders with customer & items
         $stmt = $objPdo->prepare("
-            SELECT o.orderID, o.status, o.created_at, c.firstname, c.lastname, d.name AS drug_name, oi.price AS item_price 
-            FROM order_ o 
-            JOIN customer c ON o.customerID = c.customerID 
-            JOIN order_item oi ON o.orderID = oi.orderID 
-            JOIN drug d ON oi.drugID = d.drugID 
-            WHERE c.customerID = :customerID 
-            ORDER BY o.orderID DESC, oi.order_itemID ASC;
+            SELECT o.orderID, o.status, o.created_at,
+                   c.firstname, c.lastname,
+                   d.name AS drug_name, oi.price AS item_price
+            FROM order_ o
+            JOIN customer c  ON o.customerID  = c.customerID
+            JOIN order_item oi ON o.orderID   = oi.orderID
+            JOIN drug d      ON oi.drugID     = d.drugID
+            WHERE c.customerID = :customerID
+            ORDER BY o.orderID DESC, oi.order_itemID ASC
         ");
-        $stmt->execute([
-            ':customerID' => $customerID,
-        ]);
-
+        $stmt->execute([':customerID' => $customerID]);
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo "<h2>Order History</h2>";
-
-        if (!$rows) {
-            echo "No orders found.";
-            exit;
-        }
-
-        $currentOrder = null;
-
+        $orders = [];
         foreach ($rows as $row) {
-
-            // When encountering a new order ID → print header
-            if ($currentOrder !== $row['orderID']) {
-                if ($currentOrder !== null) {
-                    echo "</ul>"; // Close previous order's items
-                }
-
-                $currentOrder = $row['orderID'];
-
-                echo "<hr>";
-                echo "<h3>Order #{$row['orderID']}</h3>";
-                echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
-                echo "Status: {$row['status']}<br>";
-                echo "Created: {$row['created_at']}<br>";
-                echo "<strong>Items:</strong>";
-                echo "<ul>";
+            $oid = $row['orderID'];
+            if (!isset($orders[$oid])) {
+                $orders[$oid] = [
+                    'orderID'    => $oid,
+                    'status'     => $row['status'],
+                    'created_at' => $row['created_at'],
+                    'customer'   => $row['firstname'] . ' ' . $row['lastname'],
+                    'items'      => [],
+                ];
             }
-
-            // Print each item
-            echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
+            $orders[$oid]['items'][] = [
+                'name'  => $row['drug_name'],
+                'price' => $row['item_price'],
+            ];
         }
-
-        echo "</ul>"; // Close last order item list
+        return array_values($orders);
 
     } catch (PDOException $e) {
-        echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";
+        return [];
     }
-
 }
 
 function get_all_customers() {
@@ -231,61 +216,47 @@ function get_all_customers() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function all_presc_history(){
-   
+/**
+ * Returns an array of all orders (with nested items) across all customers.
+ */
+function all_presc_history(): array {
     require __DIR__ . '/connect_db.php';
 
     try {
-        // Query all orders with customer & items
         $stmt = $objPdo->prepare("
-            SELECT o.orderID, o.status, o.created_at, c.firstname, c.lastname, d.name AS drug_name, oi.price AS item_price 
-            FROM order_ o 
-            JOIN customer c ON o.customerID = c.customerID 
-            JOIN order_item oi ON o.orderID = oi.orderID 
-            JOIN drug d ON oi.drugID = d.drugID 
-            ORDER BY o.orderID DESC, oi.order_itemID ASC;
+            SELECT o.orderID, o.status, o.created_at,
+                   c.firstname, c.lastname,
+                   d.name AS drug_name, oi.price AS item_price
+            FROM order_ o
+            JOIN customer c  ON o.customerID  = c.customerID
+            JOIN order_item oi ON o.orderID   = oi.orderID
+            JOIN drug d      ON oi.drugID     = d.drugID
+            ORDER BY o.orderID DESC, oi.order_itemID ASC
         ");
         $stmt->execute();
-
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        echo "<h2>Order History</h2>";
-
-        if (!$rows) {
-            echo "No orders found.";
-            exit;
-        }
-
-        $currentOrder = null;
-
+        $orders = [];
         foreach ($rows as $row) {
-
-            // When encountering a new order ID → print header
-            if ($currentOrder !== $row['orderID']) {
-                if ($currentOrder !== null) {
-                    echo "</ul>"; // Close previous order's items
-                }
-
-                $currentOrder = $row['orderID'];
-
-                echo "<hr>";
-                echo "<h3>Order #{$row['orderID']}</h3>";
-                echo "Customer: {$row['firstname']} {$row['lastname']}<br>";
-                echo "Status: {$row['status']}<br>";
-                echo "Created: {$row['created_at']}<br>";
-                echo "<strong>Items:</strong>";
-                echo "<ul>";
+            $oid = $row['orderID'];
+            if (!isset($orders[$oid])) {
+                $orders[$oid] = [
+                    'orderID'    => $oid,
+                    'status'     => $row['status'],
+                    'created_at' => $row['created_at'],
+                    'customer'   => $row['firstname'] . ' ' . $row['lastname'],
+                    'items'      => [],
+                ];
             }
-
-            // Print each item
-            echo "<li>{$row['drug_name']} — £" . number_format($row['item_price'], 2) . "</li>";
+            $orders[$oid]['items'][] = [
+                'name'  => $row['drug_name'],
+                'price' => $row['item_price'],
+            ];
         }
-
-        echo "</ul>"; // Close last order item list
+        return array_values($orders);
 
     } catch (PDOException $e) {
-        echo "<p>Error fetching order history: " . htmlspecialchars($e->getMessage()) . "</p>";
+        return [];
     }
-
 }
 ?>

@@ -1,110 +1,129 @@
-<p><a href="./dashboard.php">Back to dashboard</a></p>
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.html");
+    exit();
+}
 
 include "../database/queries.php";
 
 $errors  = [];
 $success = null;
 
-// --- Handle POST submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Collect and trim inputs
-    $name = trim($_POST['name'] ?? '');
-    $basic_unit = trim($_POST['basic_unit'] ?? '');
-    $collective_unit = trim($_POST['collective_unit'] ?? '');
+    $name                              = trim($_POST['name']                              ?? '');
+    $basic_unit                        = trim($_POST['basic_unit']                        ?? '');
+    $collective_unit                   = trim($_POST['collective_unit']                   ?? '');
     $no_of_basic_units_in_collective_unit = trim($_POST['no_of_basic_units_in_collective_unit'] ?? '');
-    $age_limit = trim($_POST['age_limit'] ?? '');
+    $age_limit                         = trim($_POST['age_limit']                         ?? '');
 
-    // --- Validation ---
-    if ($name === '') {
-        $errors[] = "Drug name is required.";
-    }
+    if ($name === '')                                             $errors[] = 'Drug name is required.';
+    if ($basic_unit === ''      || !ctype_digit($basic_unit))    $errors[] = 'Basic unit must be a valid integer.';
+    if ($collective_unit === '' || !ctype_digit($collective_unit)) $errors[] = 'Collective unit must be a valid integer.';
+    if ($no_of_basic_units_in_collective_unit === '' || !is_numeric($no_of_basic_units_in_collective_unit))
+        $errors[] = 'Number of basic units must be a numeric value.';
+    if ($age_limit === ''       || !ctype_digit($age_limit))     $errors[] = 'Age limit must be a valid integer.';
 
-    if ($basic_unit === '' || !ctype_digit($basic_unit)) {
-        $errors[] = "Basic unit must be a valid integer.";
-    }
-
-    if ($collective_unit === '' || !ctype_digit($collective_unit)) {
-        $errors[] = "Collective unit must be a valid integer.";
-    }
-
-    if ($no_of_basic_units_in_collective_unit === '' || !is_numeric($no_of_basic_units_in_collective_unit)) {
-        $errors[] = "Number of basic units in collective unit must be numeric.";
-    }
-
-    if ($age_limit === '' || !ctype_digit($age_limit)) {
-        $errors[] = "Age limit must be a valid integer.";
-    }
-
-    // --- If no errors, insert into DB ---
     if (empty($errors)) {
-         $result = new_drug($name, (int)$basic_unit, (int)$collective_unit, (float)$no_of_basic_units_in_collective_unit, (int)$age_limit);
+        $result = new_drug(
+            $name,
+            (int)$basic_unit,
+            (int)$collective_unit,
+            (float)$no_of_basic_units_in_collective_unit,
+            (int)$age_limit
+        );
         if (is_array($result) && ($result['success'] ?? false)) {
-                $success = 'New drug added successfully with ID: ' . htmlspecialchars((string)$result['drugID'], ENT_QUOTES, 'UTF-8');
-                // reset fields
-                $name = $basic_unit = $collective_unit = $no_of_basic_units_in_collective_unit = $age_limit = '';
-            } else {
-                $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred while saving the drug.';
-            }
+            $success = 'Drug added successfully. ID: ' . htmlspecialchars((string)$result['drugID'], ENT_QUOTES, 'UTF-8');
+            $name = $basic_unit = $collective_unit = $no_of_basic_units_in_collective_unit = $age_limit = '';
+        } else {
+            $errors[] = isset($result['error']) ? $result['error'] : 'An unknown error occurred.';
+        }
     }
 }
+
+$pageTitle   = 'Add Drug';
+$currentPage = 'newdrug';
+include './partials/header.php';
 ?>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add New Drug</title>
-    <style>
-        body { font-family: Arial; margin: 40px; }
-        .error { color: red; margin-bottom: 10px; }
-        .success { color: green; margin-bottom: 10px; }
-        form { max-width: 400px; }
-        input, label { display: block; width: 100%; margin-bottom: 10px; }
-        input[type='submit'] { width: auto; }
-    </style>
-</head>
-<body>
+<div class="page-header">
+  <h1>Add Drug</h1>
+  <p>Register a new drug in the pharmacy inventory</p>
+</div>
 
-<h2>Add New Drug</h2>
+<div class="card card-sm">
 
-<?php if (!empty($errors)): ?>
-    <div class="error">
+  <?php if ($success): ?>
+    <div class="alert alert-success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+      <span><?= $success ?></span>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($errors): ?>
+    <div class="alert alert-error">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>
         <strong>Please fix the following:</strong>
         <ul>
-            <?php foreach ($errors as $e): ?>
-                <li><?= htmlspecialchars($e) ?></li>
-            <?php endforeach; ?>
+          <?php foreach ($errors as $err): ?>
+            <li><?= htmlspecialchars($err, ENT_QUOTES, 'UTF-8') ?></li>
+          <?php endforeach; ?>
         </ul>
+      </div>
     </div>
-<?php endif; ?>
+  <?php endif; ?>
 
-<?php if ($success): ?>
-    <div class="success">
-        <?= htmlspecialchars($success) ?>
+  <form method="POST" action="">
+    <div class="form-grid">
+
+      <div class="field field-full">
+        <label for="name">Drug name</label>
+        <input id="name" name="name" type="text" maxlength="255"
+               value="<?= htmlspecialchars($name ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="e.g. Amoxicillin" required>
+      </div>
+
+      <div class="field">
+        <label for="basic_unit">Basic unit</label>
+        <input id="basic_unit" name="basic_unit" type="number" min="0" step="1"
+               value="<?= htmlspecialchars($basic_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="0" required>
+      </div>
+
+      <div class="field">
+        <label for="collective_unit">Collective unit</label>
+        <input id="collective_unit" name="collective_unit" type="number" min="0" step="1"
+               value="<?= htmlspecialchars($collective_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="0" required>
+      </div>
+
+      <div class="field">
+        <label for="no_of_basic_units_in_collective_unit">Basic units per collective unit</label>
+        <input id="no_of_basic_units_in_collective_unit"
+               name="no_of_basic_units_in_collective_unit"
+               type="number" min="0" step="any"
+               value="<?= htmlspecialchars($no_of_basic_units_in_collective_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="0.00" required>
+      </div>
+
+      <div class="field">
+        <label for="age_limit">Age limit</label>
+        <input id="age_limit" name="age_limit" type="number" min="0" step="1"
+               value="<?= htmlspecialchars($age_limit ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="0" required>
+      </div>
+
+    </div><!-- /.form-grid -->
+
+    <div class="form-actions">
+      <button class="btn" type="submit">Add Drug</button>
+      <a class="btn btn-ghost" href="./dashboard.php">Cancel</a>
     </div>
-<?php endif; ?>
+  </form>
 
-<form method="POST">
+</div><!-- /.card -->
 
-    <label>Drug Name</label>
-    <input type="text" name="name" value="<?= htmlspecialchars($name ?? '') ?>">
-
-    <label>Basic Unit (INT)</label>
-    <input type="number" name="basic_unit" value="<?= htmlspecialchars($basic_unit ?? '') ?>">
-
-    <label>Collective Unit (INT)</label>
-    <input type="number" name="collective_unit" value="<?= htmlspecialchars($collective_unit ?? '') ?>">
-
-    <label>No. of Basic Units in Collective Unit (DECIMAL)</label>
-    <input type="text" name="no_of_basic_units_in_collective_unit" value="<?= htmlspecialchars($no_of_basic_units_in_collective_unit ?? '') ?>">
-
-    <label>Age Limit (INT)</label>
-    <input type="number" name="age_limit" value="<?= htmlspecialchars($age_limit ?? '') ?>">
-
-    <input type="submit" value="Add Drug">
-
-</form>
-
-</body>
-</html>
+<?php include './partials/footer.php'; ?>

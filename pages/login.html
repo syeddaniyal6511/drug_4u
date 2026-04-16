@@ -217,13 +217,13 @@
 
     <div class="field">
       <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="pharmacy1" autocomplete="username" />
+      <input type="text" id="username" name="username" placeholder="pharmacy1" autocomplete="username" required />
     </div>
 
     <div class="field">
       <label for="password">Password</label>
       <div class="pw-wrap">
-        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" />
+        <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required />
         <button class="toggle-pw" type="button" onclick="togglePw()" aria-label="Show password">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -290,6 +290,17 @@
   }
 
   document.getElementById('login-form').addEventListener('submit', handleLogin);
+
+  (function checkErrorParam() {
+    const param = new URLSearchParams(window.location.search).get('error');
+    if (!param) return;
+    const messages = {
+      required: 'Please fill in all fields.',
+      invalid:  'Invalid username or password.',
+      server:   'A server error occurred. Please try again.'
+    };
+    showError(messages[param] || 'Login failed. Please try again.');
+  })();
 </script>
 
 </body>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ':*)",
+      "Bash(mkdir -p \"c:/Abyss Web Server/htdocs/drug_4u/assets/css\")",
+      "Bash(mkdir -p \"c:/Abyss Web Server/htdocs/drug_4u/pages/partials\")"
+    ]
+  }
+}

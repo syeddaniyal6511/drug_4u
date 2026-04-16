@@ -15,7 +15,7 @@ $username = trim((string)($_POST['username'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
 
 if ($username === '' || $password === '') {
-    echo 'Username and password are required';
+    header('Location: ../pages/login.html?error=required');
     exit;
 }
 
@@ -25,7 +25,7 @@ try {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
-        echo 'User not found';
+        header('Location: ../pages/login.html?error=invalid');
         exit;
     }
 
@@ -43,7 +43,7 @@ try {
     }
 
     if (!$ok) {
-        echo 'Invalid password';
+        header('Location: ../pages/login.html?error=invalid');
         exit;
     }
 
@@ -54,7 +54,6 @@ try {
     header('Location: ../pages/dashboard.php');
     exit;
 } catch (Throwable $e) {
-    http_response_code(500);
-    echo 'Login failed';
+    header('Location: ../pages/login.html?error=server');
     exit;
 }
