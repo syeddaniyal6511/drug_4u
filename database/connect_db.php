@@ -2,7 +2,7 @@
 #connect on localhost for user westlake
 #with password hanchurch
 $dbc = mysqli_connect
-('localhost' , 'root' , 'Temitope123.' , 'clinic_db')
+('localhost' , 'root' , '' , 'clinic_db')
 #if you recall my email is westlake, a password of hanchurch and a database called jonathan_db
 OR die
 (mysqli_connect_error() );
@@ -19,7 +19,7 @@ require_once __DIR__ . '/run_schema.php';
 	{
 		$objPdo = new PDO
 				('mysql:host=localhost;port=3306;dbname=clinic_db',
-				'root','Temitope123.');
+				'root');
         $objPdo -> exec("SET CHARACTER SET utf8");
 
 		//echo "connexion ok<br/>\n";

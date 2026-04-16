@@ -8,19 +8,12 @@ require_once __DIR__ . '/../vendor/autoload.php'; // Composer / PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-/* ── DB config — replace with your shared config include ── */
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'clinic_db');
-define('DB_USER', 'root');
-define('DB_PASS', 'Temitope123.');
-define('DB_CHAR', 'utf8mb4');
-
-/* ── Mail config — use your SMTP credentials ── */
-define('MAIL_HOST',     'smtp.gmail.com');      // or your SMTP host
+/* ── Mail config ── */
+define('MAIL_HOST',     'smtp.gmail.com');
 define('MAIL_PORT',     587);
 define('MAIL_USERNAME', 'sdaniyal1971@gmail.com');
-define('MAIL_PASSWORD', 'exqecifkhvmxfchk');   // Gmail: use App Password, not account password
-define('MAIL_FROM',     'your@email.com');
+define('MAIL_PASSWORD', 'exqecifkhvmxfchk');
+define('MAIL_FROM',     'sdaniyal1971@gmail.com');
 define('MAIL_FROMNAME', 'drug_4u');
 
 /* ── App base URL — used to build the reset link ── */
@@ -47,21 +40,20 @@ $generic_ok = ['success' => true, 'message' => 'If that account exists, a reset 
 
 /* ── DB connection ── */
 try {
-    $pdo = new PDO(
-        'mysql:host='.DB_HOST.';dbname='.DB_NAME.';charset='.DB_CHAR,
-        DB_USER, DB_PASS,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
-    );
-} catch (PDOException $e) {
+    require_once __DIR__ . '/../database/connect_db.php';
+    $pdo = $objPdo;
+} catch (Throwable $e) {
     http_response_code(500);
     exit(json_encode(['success' => false, 'message' => 'Database connection failed.']));
 }
 
-/* ── Look up user by email OR email ── */
-$stmt = $pdo->prepare(
-    'SELECT userID, email FROM user_ WHERE email = ? OR email = ? LIMIT 1'
-);
-$stmt->execute([$identifier, $identifier]);
+/* ── Detect whether column is 'email' or 'username' ── */
+$cols = $pdo->query("SHOW COLUMNS FROM user_")->fetchAll(PDO::FETCH_COLUMN);
+$emailCol = in_array('email', $cols, true) ? 'email' : 'username';
+
+/* ── Look up user by email/username ── */
+$stmt = $pdo->prepare("SELECT userID, {$emailCol} AS email FROM user_ WHERE {$emailCol} = ? LIMIT 1");
+$stmt->execute([$identifier]);
 $user = $stmt->fetch();
 
 if (!$user || !$user['email']) {

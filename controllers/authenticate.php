@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 session_start();
 
-require_once __DIR__ . '/../database/connect_db.php';
-
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     http_response_code(405);
     echo 'Method not allowed';
@@ -15,12 +13,24 @@ $email = trim((string)($_POST['email'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
 
 if ($email === '' || $password === '') {
-    echo 'Username and password are required';
+    header('Location: ../pages/login.html?error=required');
     exit;
 }
 
 try {
-    $stmt = $objPdo->prepare('SELECT userID, email, pwd, role FROM user_ WHERE email = :email LIMIT 1');
+    require_once __DIR__ . '/../database/connect_db.php';
+
+    // Support both 'email' and 'username' column names
+    $cols = [];
+    $colStmt = $objPdo->query("SHOW COLUMNS FROM user_");
+    foreach ($colStmt->fetchAll(PDO::FETCH_COLUMN) as $col) {
+        $cols[] = $col;
+    }
+    $emailCol = in_array('email', $cols, true) ? 'email' : 'username';
+
+    $stmt = $objPdo->prepare(
+        "SELECT userID, {$emailCol}, pwd, role FROM user_ WHERE {$emailCol} = :email LIMIT 1"
+    );
     $stmt->execute([':email' => $email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -32,7 +42,7 @@ try {
     $stored = (string)($user['pwd'] ?? '');
     $ok = password_verify($password, $stored);
 
-    // Backward compatibility if old rows stored plaintext passwords:
+    // Backward compatibility: plaintext passwords
     if (!$ok && $stored !== '' && hash_equals($stored, $password)) {
         $ok = true;
         $newHash = password_hash($password, PASSWORD_DEFAULT);
@@ -49,11 +59,13 @@ try {
 
     session_regenerate_id(true);
     $_SESSION['user_id'] = (int)$user['userID'];
-    $_SESSION['role'] = (string)($user['role'] ?? '');
+    $_SESSION['role']    = (string)($user['role'] ?? '');
 
     header('Location: ../pages/dashboard.php');
     exit;
+
 } catch (Throwable $e) {
+    error_log('authenticate.php error: ' . $e->getMessage());
     header('Location: ../pages/login.html?error=server');
     exit;
 }
