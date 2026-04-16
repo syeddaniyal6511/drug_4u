@@ -11,17 +11,17 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     exit;
 }
 
-$username = trim((string)($_POST['username'] ?? ''));
+$email = trim((string)($_POST['email'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
 
-if ($username === '' || $password === '') {
-    header('Location: ../pages/login.html?error=required');
+if ($email === '' || $password === '') {
+    echo 'Username and password are required';
     exit;
 }
 
 try {
-    $stmt = $objPdo->prepare('SELECT userID, username, pwd, role FROM user_ WHERE username = :username LIMIT 1');
-    $stmt->execute([':username' => $username]);
+    $stmt = $objPdo->prepare('SELECT userID, email, pwd, role FROM user_ WHERE email = :email LIMIT 1');
+    $stmt->execute([':email' => $email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {

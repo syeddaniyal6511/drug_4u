@@ -4,7 +4,7 @@ declare(strict_types=1);
 /**
  * Seed a default admin user into `user_`.
  *
- * Safe to re-run: it will not create duplicates (checks by username).
+ * Safe to re-run: it will not create duplicates (checks by email).
  *
  * Usage (browser): http://localhost/drug_4u/database/seed_admin.php
  * Usage (CLI): php database/seed_admin.php
@@ -16,7 +16,7 @@ $defaultAdmin = [
     'firstname' => 'System',
     'lastname'  => 'Administrator',
     'dob'       => '1990-01-01',
-    'username'  => 'admin@gmail.com',
+    'email'  => 'admin@gmail.com',
     // Change this after first login.
     'password'  => 'password',
     'role'      => 'admin',
@@ -25,8 +25,8 @@ $defaultAdmin = [
 try {
     // Ensure `user_` exists (connect_db.php runs schema).
 
-    $stmt = $objPdo->prepare('SELECT userID, role FROM user_ WHERE username = :username LIMIT 1');
-    $stmt->execute([':username' => $defaultAdmin['username']]);
+    $stmt = $objPdo->prepare('SELECT userID, role FROM user_ WHERE email = :email LIMIT 1');
+    $stmt->execute([':email' => $defaultAdmin['email']]);
     $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($existing) {
@@ -40,7 +40,7 @@ try {
             ]);
         }
 
-        echo "Default admin already exists (username: {$defaultAdmin['username']}).\n";
+        echo "Default admin already exists (email: {$defaultAdmin['email']}).\n";
         exit(0);
     }
 
@@ -50,20 +50,20 @@ try {
     }
 
     $ins = $objPdo->prepare('
-        INSERT INTO user_ (firstname, lastname, dob, username, pwd, role)
-        VALUES (:firstname, :lastname, :dob, :username, :pwd, :role)
+        INSERT INTO user_ (firstname, lastname, dob, email, pwd, role)
+        VALUES (:firstname, :lastname, :dob, :email, :pwd, :role)
     ');
     $ins->execute([
         ':firstname' => $defaultAdmin['firstname'],
         ':lastname'  => $defaultAdmin['lastname'],
         ':dob'       => $defaultAdmin['dob'],
-        ':username'  => $defaultAdmin['username'],
+        ':email'  => $defaultAdmin['email'],
         ':pwd'       => $pwdHash,
         ':role'      => $defaultAdmin['role'],
     ]);
 
     echo "Seeded default admin user.\n";
-    echo "Username: {$defaultAdmin['username']}\n";
+    echo "Username: {$defaultAdmin['email']}\n";
     echo "Password: {$defaultAdmin['password']}\n";
 } catch (Throwable $e) {
     http_response_code(500);

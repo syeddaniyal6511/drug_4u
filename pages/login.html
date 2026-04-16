@@ -216,8 +216,8 @@
     </div>
 
     <div class="field">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" placeholder="pharmacy1" autocomplete="username" required />
+      <label for="email">Username</label>
+      <input type="text" id="email" name="email" placeholder="pharmacy1" autocomplete="email" />
     </div>
 
     <div class="field">
@@ -231,6 +231,10 @@
         </button>
       </div>
     </div>
+
+      <a href="forgot_password.html" class="forgot-link">Forgot password?</a>
+
+<button class="btn" id="login-btn" onclick="handleLogin()">
 
     <button class="btn" id="login-btn" type="submit">
       <span class="btn-text">Sign in</span>
@@ -253,12 +257,12 @@
     const box = document.getElementById('error-msg');
     document.getElementById('error-text').textContent = msg;
     box.classList.add('visible');
-    ['username', 'password'].forEach(id => document.getElementById(id).classList.add('has-error'));
+    ['email', 'password'].forEach(id => document.getElementById(id).classList.add('has-error'));
   }
 
   function clearError() {
     document.getElementById('error-msg').classList.remove('visible');
-    ['username', 'password'].forEach(id => document.getElementById(id).classList.remove('has-error'));
+    ['email', 'password'].forEach(id => document.getElementById(id).classList.remove('has-error'));
   }
 
   function setLoading(on) {
@@ -276,10 +280,10 @@
     event.preventDefault();
     clearError();
 
-    const username = document.getElementById('username').value.trim();
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    if (!username || !password) {
+    if (!email || !password) {
       showError('Please fill in all fields.');
       return;
     }

@@ -15,7 +15,7 @@ require_once('../database/connect_db.php');
             <form action="../controllers/authenticate.php" method="POST">
 
             <label>Username:</label>
-            <input type="text" name="username" required>
+            <input type="text" name="email" required>
 
             <br><br>
 
