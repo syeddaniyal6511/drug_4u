@@ -14,7 +14,7 @@ class User extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'firstname', 'lastname', 'dob', 'username', 'pwd', 'role'
+        'firstname', 'lastname', 'dob', 'email', 'pwd', 'role'
     ];
 
     public function orders()
