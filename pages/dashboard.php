@@ -37,6 +37,26 @@ include './partials/header.php';
     </div>
   </a>
 
+  <a href="./all_stock.php" class="dash-card">
+    <div class="dash-card-icon" style="background:rgba(45,212,191,0.12);color:#2dd4bf">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    </div>
+    <div>
+      <div class="dash-card-label">All Stock</div>
+      <div class="dash-card-sub">View all stock batches &amp; expiry dates</div>
+    </div>
+  </a>
+
+  <a href="./add_stock.php" class="dash-card">
+    <div class="dash-card-icon" style="background:rgba(45,212,191,0.15);color:#2dd4bf">
+      <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+    </div>
+    <div>
+      <div class="dash-card-label">Add Stock</div>
+      <div class="dash-card-sub">Record a new stock batch for a drug</div>
+    </div>
+  </a>
+
   <a href="./new_order.php" class="dash-card">
     <div class="dash-card-icon" style="background:rgba(251,191,36,0.15);color:#fbbf24">
       <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>

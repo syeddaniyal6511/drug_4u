@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS user_ (
 	firstname varchar(255),
 	lastname varchar(255),
 	dob DATE,
-	username varchar(255),
+	email varchar(255),
 	pwd varchar(255),
 	role enum('customer', 'pharmacist', 'admin')
 );

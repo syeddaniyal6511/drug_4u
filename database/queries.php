@@ -216,6 +216,51 @@ function get_all_customers() {
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function get_all_drugs(): array {
+    require __DIR__ . '/connect_db.php';
+    $stmt = $objPdo->prepare("SELECT drugID, name FROM drug ORDER BY name ASC");
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function get_all_stock(): array {
+    require __DIR__ . '/connect_db.php';
+    try {
+        $stmt = $objPdo->query("
+            SELECT s.stockID, d.name AS drug_name, s.name AS stock_name,
+                   s.batch_number, s.quantity, s.buying_price_per_pack,
+                   s.selling_price_per_pack, s.expiry_date
+            FROM stock s
+            JOIN drug d ON s.drugID = d.drugID
+            ORDER BY s.expiry_date ASC, s.stockID ASC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function new_stock(int $drugID, string $name, int $quantity, string $batch_number, float $buying_price, float $selling_price, string $expiry_date): array {
+    require __DIR__ . '/connect_db.php';
+    try {
+        $stmt = $objPdo->prepare("INSERT INTO stock
+            (drugID, name, quantity, batch_number, buying_price_per_pack, selling_price_per_pack, expiry_date)
+            VALUES (:drugID, :name, :quantity, :batch_number, :buying_price, :selling_price, :expiry_date)");
+        $stmt->execute([
+            ':drugID'        => $drugID,
+            ':name'          => $name,
+            ':quantity'      => $quantity,
+            ':batch_number'  => $batch_number,
+            ':buying_price'  => $buying_price,
+            ':selling_price' => $selling_price,
+            ':expiry_date'   => $expiry_date,
+        ]);
+        return ['success' => true, 'stockID' => (int)$objPdo->lastInsertId()];
+    } catch (PDOException $e) {
+        return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
 /**
  * Returns an array of all orders (with nested items) across all customers.
  */

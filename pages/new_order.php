@@ -50,7 +50,7 @@ foreach ($drugs as $dd) {
     $price = number_format((float)$dd['selling_price'], 2, '.', '');
     $stock = (int)$dd['stock_qty'];
     $drugOptionsHtml .= '<option value="' . $id . '" data-price="' . $price . '" data-stock="' . $stock . '">'
-        . $name . ' — $' . $price . ' (stock: ' . $stock . ')</option>' . "\n";
+        . $name . ' — £' . $price . ' (stock: ' . $stock . ')</option>' . "\n";
 }
 
 try {
@@ -224,7 +224,7 @@ include './partials/header.php';
                           data-price="<?= e($optPrice) ?>"
                           data-stock="<?= e($optStock) ?>"
                           <?= ($selDrug == $dd['drugID']) ? 'selected' : '' ?>>
-                    <?= e($dd['name'] . ' — $' . $optPrice . ' (stock: ' . $optStock . ')') ?>
+                    <?= e($dd['name'] . ' — £' . $optPrice . ' (stock: ' . $optStock . ')') ?>
                   </option>
                 <?php endforeach; ?>
               </select>
@@ -245,7 +245,7 @@ include './partials/header.php';
     </div><!-- /.items-table-wrap -->
 
     <div class="total-row">
-      Order total: <span class="total-amount">$<span id="orderTotal">0.00</span></span>
+      Order total: <span class="total-amount">£<span id="orderTotal">0.00</span></span>
     </div>
 
     <div class="form-actions">
@@ -287,7 +287,7 @@ function recalc() {
         const price = parseFloat((tr.querySelector('.price') || {value:0}).value) || 0;
         const line  = qty * price;
         const lt    = tr.querySelector('.line-total');
-        if (lt) lt.textContent = line > 0 ? '$' + line.toFixed(2) : '—';
+        if (lt) lt.textContent = line > 0 ? '£' + line.toFixed(2) : '—';
         total += line;
     });
     document.getElementById('orderTotal').textContent = total.toFixed(2);
