@@ -4,8 +4,8 @@
  * Set $pageTitle and $currentPage before including.
  *
  * $currentPage values:
- *   dashboard | register_customer | newdrug | new_order
- *   prescription_history | all_orders
+ *   dashboard | register_customer | newdrug | new_order | add_stock | all_stock
+ *   prescription_history | all_orders | all_customers
  */
 $pageTitle   = $pageTitle   ?? 'Drug 4U';
 $currentPage = $currentPage ?? '';
@@ -87,6 +87,11 @@ function nav_active(string $page, string $current): string {
       <a href="./all_orders.php" class="nav-link<?= nav_active('all_orders', $currentPage) ?>">
         <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
         All Orders
+      </a>
+
+      <a href="./all_customers.php" class="nav-link<?= nav_active('all_customers', $currentPage) ?>">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        All Customers
       </a>
     </nav>
 

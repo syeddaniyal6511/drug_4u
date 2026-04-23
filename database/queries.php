@@ -207,13 +207,21 @@ function presc_history(int $customerID): array {
     }
 }
 
-function get_all_customers() {
+function get_all_customers(): array {
     require __DIR__ . '/connect_db.php';
-
-    $stmt = $objPdo->prepare("SELECT customerID, firstname, lastname FROM customer ORDER BY firstname ASC");
-    $stmt->execute();
-
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    try {
+        $stmt = $objPdo->query("
+            SELECT c.customerID, c.firstname, c.lastname, c.gender, c.dob, c.postcode,
+                   GROUP_CONCAT(a.description SEPARATOR '; ') AS allergies
+            FROM customer c
+            LEFT JOIN allergies a ON c.customerID = a.customerID
+            GROUP BY c.customerID
+            ORDER BY c.customerID ASC
+        ");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        return [];
+    }
 }
 
 function get_all_drugs(): array {
