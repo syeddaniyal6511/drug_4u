@@ -37,7 +37,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $parts    = explode('-', $dob);
         $dobValid = checkdate((int)$parts[1], (int)$parts[2], (int)$parts[0]);
     }
-    if (!$dobValid) $errors[] = 'Date of birth must be a valid date (YYYY-MM-DD).';
+    if (!$dobValid) {
+        $errors[] = 'Date of birth must be a valid date (YYYY-MM-DD).';
+    } else {
+        // Check not in future
+        $today = new DateTime('today');
+        $birthDate = DateTime::createFromFormat('Y-m-d', $dob);
+        if ($birthDate > $today) {
+            $errors[] = 'Date of birth cannot be in the future.';
+        }
+    }
 
     if ($postcode === '' || !preg_match('/^\d+$/', $postcode)) {
         $errors[] = 'Postcode must contain digits only.';

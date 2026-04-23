@@ -95,9 +95,18 @@ include './partials/header.php';
 
       <div class="field">
         <label for="collective_unit">Collective unit</label>
-        <input id="collective_unit" name="collective_unit" type="number" min="0" step="1"
-               value="<?= htmlspecialchars($collective_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
-               placeholder="0" required>
+        <select id="collective_unit" name="collective_unit" required>
+          <option value="" disabled <?= empty($collective_unit) ? 'selected' : '' ?>>Choose…</option>
+          <option value="1" <?= (isset($collective_unit) && $collective_unit === '1') ? 'selected' : '' ?>>Box</option>
+          <option value="2" <?= (isset($collective_unit) && $collective_unit === '2') ? 'selected' : '' ?>>Bottle</option>
+          <option value="3" <?= (isset($collective_unit) && $collective_unit === '3') ? 'selected' : '' ?>>Carton</option>
+          <option value="4" <?= (isset($collective_unit) && $collective_unit === '4') ? 'selected' : '' ?>>Pack</option>
+          <option value="5" <?= (isset($collective_unit) && $collective_unit === '5') ? 'selected' : '' ?>>Strip</option>
+          <option value="6" <?= (isset($collective_unit) && $collective_unit === '6') ? 'selected' : '' ?>>Blister</option>
+          <option value="7" <?= (isset($collective_unit) && $collective_unit === '7') ? 'selected' : '' ?>>Vial</option>
+          <option value="8" <?= (isset($collective_unit) && $collective_unit === '8') ? 'selected' : '' ?>>Tube</option>
+        </select>
+      </div>
       </div>
 
       <div class="field">

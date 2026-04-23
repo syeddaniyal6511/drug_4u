@@ -40,7 +40,7 @@ include './partials/header.php';
       <tbody>
         <?php foreach ($stock as $row):
           $expired = $row['expiry_date'] && $row['expiry_date'] < date('Y-m-d');
-          $lowStock = (int)$row['quantity'] === 0;
+          $lowStock = (int)$row['quantity'] < 10;
         ?>
           <tr>
             <td style="color:var(--muted)"><?= (int)$row['stockID'] ?></td>
@@ -49,7 +49,7 @@ include './partials/header.php';
             <td style="font-family:var(--mono, monospace)"><?= htmlspecialchars($row['batch_number'], ENT_QUOTES, 'UTF-8') ?></td>
             <td>
               <?php if ($lowStock): ?>
-                <span class="badge badge-cancelled"><?= (int)$row['quantity'] ?></span>
+                <span class="badge badge-cancelled">Low Stock: <?= (int)$row['quantity'] ?></span>
               <?php else: ?>
                 <?= (int)$row['quantity'] ?>
               <?php endif; ?>

@@ -42,7 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $parts = explode('-', $dob);
         $dobValid = checkdate((int)$parts[1], (int)$parts[2], (int)$parts[0]);
     }
-    if (!$dobValid) $errors[] = 'Date of birth must be a valid date (YYYY-MM-DD).';
+
+    if (!$dobValid) {
+        $errors[] = 'Date of birth must be a valid date (YYYY-MM-DD).';
+    } else {
+        // Check not in future
+        $today = new DateTime('today');
+        $birthDate = DateTime::createFromFormat('Y-m-d', $dob);
+        if ($birthDate > $today) {
+            $errors[] = 'Date of birth cannot be in the future.';
+        }
+    }
 
     // Postcode: BIGINT in DB — accept only digits here; store as string to preserve leading zeros
     if ($postcode === '' || !preg_match('/^\d+$/', $postcode)) {
@@ -141,8 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div>
             <label for="dob">Date of birth</label>
-            <input id="dob" name="dob" type="date"
-                   value="<?= isset($dob) ? htmlspecialchars($dob, ENT_QUOTES, 'UTF-8') : '' ?>" required>
+            <input id="dob" name="dob" type="date" required>
         </div>
     </div>
 
