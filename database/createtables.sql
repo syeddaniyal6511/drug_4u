@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS invoice (
 );
 CREATE TABLE IF NOT EXISTS password_resets (
     id          INT UNSIGNED    NOT NULL AUTO_INCREMENT,
-    user_id     INT UNSIGNED    NOT NULL,
+    user_id     INT             NOT NULL,
     token       CHAR(64)        NOT NULL,
     expires_at  DATETIME        NOT NULL,
     used        TINYINT(1)      NOT NULL DEFAULT 0,
