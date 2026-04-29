@@ -96,18 +96,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register a New Customer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
-        form { max-width: 640px; padding: 1.25rem; border: 1px solid #ddd; border-radius: 8px; }
+        body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; background: linear-gradient(180deg, #7f9bff 0%, #a98dff 45%, #ede7ff 100%); color: #0f172a; }
+        form { max-width: 640px; padding: 1.75rem; border: 1px solid rgba(15,23,42,0.08); border-radius: 24px; background: #ffffff; box-shadow: 0 28px 64px rgba(15,23,42,0.10); }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
         .row.full { grid-template-columns: 1fr; }
-        label { display: block; margin-bottom: .25rem; font-weight: 600; }
-        input, select { width: 100%; padding: .5rem; border: 1px solid #ccc; border-radius: 6px; }
-        .actions { margin-top: 1rem; }
-        .btn { background: #0a66c2; color: #fff; border: 0; padding: .6rem 1rem; border-radius: 6px; cursor: pointer; }
-        .btn:disabled { opacity: .6; cursor: not-allowed; }
-        .messages { margin-bottom: 1rem; }
-        .error { background: #ffe9e9; color: #b00020; padding: .75rem; border-radius: 6px; margin-bottom: .5rem; }
-        .success { background: #e6ffed; color: #0a7f47; padding: .75rem; border-radius: 6px; }
+        label { display: block; margin-bottom: .35rem; font-weight: 700; color: #475569; }
+        input, select, textarea { width: 100%; padding: 0.95rem 1rem; border: 1px solid rgba(15,23,42,0.12); border-radius: 16px; background: #f8fafc; color: #0f172a; font-size: 15px; }
+        .actions { margin-top: 1.5rem; }
+        .btn { background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%); color: #ffffff; border: 0; padding: 0.95rem 1.2rem; border-radius: 999px; cursor: pointer; font-weight: 700; box-shadow: 0 18px 35px rgba(37,99,235,0.18); }
+        .btn:hover { opacity: 0.98; }
+        .btn:disabled { opacity: .65; cursor: not-allowed; }
+        .messages { margin-bottom: 1.25rem; }
+        .error { background: #fef2f2; color: #991b1b; padding: .95rem; border-radius: 16px; margin-bottom: .85rem; border: 1px solid rgba(239,68,68,0.18); }
+        .success { background: #dcfce7; color: #166534; padding: .95rem; border-radius: 16px; border: 1px solid rgba(34,197,94,0.18); }
     </style>
 </head>
 <body>

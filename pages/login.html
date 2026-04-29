@@ -9,24 +9,24 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #0f1117;
-      --surface: #181c27;
-      --border: rgba(255,255,255,0.08);
-      --border-focus: rgba(255,255,255,0.28);
-      --text: #e8eaf0;
-      --muted: #6b7280;
-      --accent: #4f8ef7;
-      --accent-hover: #3a78e8;
-      --error-bg: rgba(220,53,69,0.12);
-      --error-border: rgba(220,53,69,0.4);
-      --error-text: #f87171;
-      --success: #34d399;
-      --radius: 10px;
+      --bg: #d9d4ff;
+      --surface: #ffffff;
+      --border: rgba(15,23,42,0.08);
+      --border-focus: rgba(124,58,237,0.45);
+      --text: #0f172a;
+      --muted: #475569;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --error-bg: rgba(254,226,226,0.95);
+      --error-border: rgba(239,68,68,0.30);
+      --error-text: #b91c1c;
+      --success: #047857;
+      --radius: 16px;
     }
 
     html, body {
       height: 100%;
-      background: var(--bg);
+      background: linear-gradient(180deg, #7f9bff 0%, #a98dff 45%, #ede7ff 100%);
       font-family: 'DM Sans', sans-serif;
       color: var(--text);
       display: flex;
@@ -39,18 +39,19 @@
       position: fixed;
       inset: 0;
       background:
-        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(79,142,247,0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 40% 50% at 80% 90%, rgba(79,142,247,0.05) 0%, transparent 60%);
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(124,58,237,0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 50% at 80% 90%, rgba(79,70,229,0.12) 0%, transparent 55%);
       pointer-events: none;
     }
 
     .card {
       width: 100%;
-      max-width: 400px;
-      padding: 40px 36px;
+      max-width: 430px;
+      padding: 44px 38px;
       background: var(--surface);
-      border: 0.5px solid var(--border);
-      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 24px;
+      box-shadow: 0 28px 64px rgba(15,23,42,0.10);
       position: relative;
       animation: fadeUp 0.4s ease both;
     }
@@ -62,8 +63,8 @@
 
     .logo {
       width: 36px; height: 36px;
-      background: var(--accent);
-      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+      border-radius: 12px;
       display: flex; align-items: center; justify-content: center;
       margin-bottom: 24px;
     }
@@ -96,20 +97,21 @@
 
     input {
       width: 100%;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.04);
-      border: 0.5px solid var(--border);
+      padding: 12px 14px;
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.12);
       border-radius: var(--radius);
       color: var(--text);
       font-family: 'DM Sans', sans-serif;
-      font-size: 14px;
+      font-size: 15px;
       outline: none;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
-    input::placeholder { color: var(--muted); }
+    input::placeholder { color: #7b8794; }
     input:focus {
       border-color: var(--border-focus);
-      background: rgba(255,255,255,0.06);
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
     }
     input.has-error { border-color: var(--error-border); }
 
@@ -138,27 +140,28 @@
     .btn {
       width: 100%;
       padding: 11px;
-      background: var(--accent);
+      background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
       color: #fff;
       font-family: 'DM Sans', sans-serif;
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 700;
       border: none;
-      border-radius: var(--radius);
+      border-radius: 999px;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
+      transition: transform 0.1s, box-shadow 0.2s, opacity 0.2s;
       position: relative;
       margin-top: 4px;
+      box-shadow: 0 18px 35px rgba(37,99,235,0.18);
     }
-    .btn:hover:not(:disabled) { background: var(--accent-hover); }
+    .btn:hover:not(:disabled) { opacity: 0.98; box-shadow: 0 22px 40px rgba(37,99,235,0.22); }
     .btn:active:not(:disabled) { transform: scale(0.98); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     .spinner {
       display: none;
       width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
+      border: 2px solid rgba(16,42,67,0.15);
+      border-top-color: #2563eb;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       margin: 0 auto;
