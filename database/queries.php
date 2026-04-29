@@ -61,7 +61,7 @@ function insert_allergy(int $customerID, string $description, $drugID = null)
 }
 
 
-function new_drug(string $name, int $basic_unit, int $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit): array {
+function new_drug(string $name, string $basic_unit, string $collective_unit, float $no_of_basic_units_in_collective_unit, int $age_limit): array {
     require __DIR__ . '/connect_db.php';
     try {
         $stmt = $objPdo->prepare("INSERT INTO drug
@@ -75,6 +75,61 @@ function new_drug(string $name, int $basic_unit, int $collective_unit, float $no
             ':age_limit'                           => $age_limit,
         ]);
         return ['success' => true, 'drugID' => (int)$objPdo->lastInsertId()];
+    } catch (PDOException $e) {
+        return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+    }
+}
+
+function get_today_orders(): array {
+    require __DIR__ . '/connect_db.php';
+    try {
+        $stmt = $objPdo->query("
+            SELECT o.orderID, o.status, o.created_at,
+                   c.customerID, c.firstname, c.lastname,
+                   d.name AS drug_name,
+                   oi.order_itemID, oi.price AS item_price
+            FROM order_ o
+            JOIN customer c    ON o.customerID  = c.customerID
+            JOIN order_item oi ON o.orderID     = oi.orderID
+            JOIN drug d        ON oi.drugID     = d.drugID
+            WHERE DATE(o.created_at) = CURDATE()
+            ORDER BY o.orderID DESC, oi.order_itemID ASC
+        ");
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $orders = [];
+        foreach ($rows as $row) {
+            $oid = $row['orderID'];
+            if (!isset($orders[$oid])) {
+                $orders[$oid] = [
+                    'orderID'    => $oid,
+                    'status'     => $row['status'],
+                    'created_at' => $row['created_at'],
+                    'customer'   => $row['firstname'] . ' ' . $row['lastname'],
+                    'customerID' => $row['customerID'],
+                    'items'      => [],
+                ];
+            }
+            $orders[$oid]['items'][] = [
+                'name'  => $row['drug_name'],
+                'price' => (float)$row['item_price'],
+            ];
+        }
+        return array_values($orders);
+    } catch (PDOException $e) {
+        return [];
+    }
+}
+
+function update_order_status(int $orderID, string $status): array {
+    require __DIR__ . '/connect_db.php';
+    if (!in_array($status, ['pending', 'paid', 'cancelled'], true)) {
+        return ['success' => false, 'error' => 'Invalid status.'];
+    }
+    try {
+        $stmt = $objPdo->prepare("UPDATE order_ SET status = :status WHERE orderID = :orderID");
+        $stmt->execute([':status' => $status, ':orderID' => $orderID]);
+        return ['success' => true];
     } catch (PDOException $e) {
         return ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
     }

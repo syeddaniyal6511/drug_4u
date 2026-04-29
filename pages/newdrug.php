@@ -20,8 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $age_limit                         = trim($_POST['age_limit']                         ?? '');
 
     if ($name === '')                                             $errors[] = 'Drug name is required.';
-    if ($basic_unit === ''      || !ctype_digit($basic_unit))    $errors[] = 'Basic unit must be a valid integer.';
-    if ($collective_unit === '' || !ctype_digit($collective_unit)) $errors[] = 'Collective unit must be a valid integer.';
+    if ($basic_unit === '')      $errors[] = 'Basic unit is required (e.g. Capsules, Tablets).';
+    if ($collective_unit === '') $errors[] = 'Collective unit is required (e.g. Box, Bottle).';
     if ($no_of_basic_units_in_collective_unit === '' || !is_numeric($no_of_basic_units_in_collective_unit))
         $errors[] = 'Number of basic units must be a numeric value.';
     if ($age_limit === ''       || !ctype_digit($age_limit))     $errors[] = 'Age limit must be a valid integer.';
@@ -29,8 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $result = new_drug(
             $name,
-            (int)$basic_unit,
-            (int)$collective_unit,
+            $basic_unit,
+            $collective_unit,
             (float)$no_of_basic_units_in_collective_unit,
             (int)$age_limit
         );
@@ -88,24 +88,18 @@ include './partials/header.php';
 
       <div class="field">
         <label for="basic_unit">Basic unit</label>
-        <input id="basic_unit" name="basic_unit" type="number" min="0" step="1"
+        <input id="basic_unit" name="basic_unit" type="text" maxlength="100"
                value="<?= htmlspecialchars($basic_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
-               placeholder="0" required>
+               placeholder="e.g. Capsules" required>
+        <small class="field-hint">The individual unit name &mdash; e.g. <em>Tablets</em>, <em>Capsules</em>, <em>ml</em>, <em>Drops</em></small>
       </div>
 
       <div class="field">
         <label for="collective_unit">Collective unit</label>
-        <select id="collective_unit" name="collective_unit" required>
-          <option value="" disabled <?= empty($collective_unit) ? 'selected' : '' ?>>Choose…</option>
-          <option value="1" <?= (isset($collective_unit) && $collective_unit === '1') ? 'selected' : '' ?>>Box</option>
-          <option value="2" <?= (isset($collective_unit) && $collective_unit === '2') ? 'selected' : '' ?>>Bottle</option>
-          <option value="3" <?= (isset($collective_unit) && $collective_unit === '3') ? 'selected' : '' ?>>Carton</option>
-          <option value="4" <?= (isset($collective_unit) && $collective_unit === '4') ? 'selected' : '' ?>>Pack</option>
-          <option value="5" <?= (isset($collective_unit) && $collective_unit === '5') ? 'selected' : '' ?>>Strip</option>
-          <option value="6" <?= (isset($collective_unit) && $collective_unit === '6') ? 'selected' : '' ?>>Blister</option>
-          <option value="7" <?= (isset($collective_unit) && $collective_unit === '7') ? 'selected' : '' ?>>Vial</option>
-          <option value="8" <?= (isset($collective_unit) && $collective_unit === '8') ? 'selected' : '' ?>>Tube</option>
-        </select>
+        <input id="collective_unit" name="collective_unit" type="text" maxlength="100"
+               value="<?= htmlspecialchars($collective_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               placeholder="e.g. Box" required>
+        <small class="field-hint">The outer packaging &mdash; e.g. <em>Box</em>, <em>Bottle</em>, <em>Strip</em>, <em>Vial</em></small>
       </div>
       </div>
 
@@ -116,6 +110,8 @@ include './partials/header.php';
                type="number" min="0" step="any"
                value="<?= htmlspecialchars($no_of_basic_units_in_collective_unit ?? '', ENT_QUOTES, 'UTF-8') ?>"
                placeholder="0.00" required>
+        <small class="field-hint">How many basic units fit in one collective unit</small>
+        <div id="unit-preview" class="unit-preview" style="display:none"></div>
       </div>
 
       <div class="field">
@@ -134,5 +130,30 @@ include './partials/header.php';
   </form>
 
 </div><!-- /.card -->
+
+<script>
+(function () {
+  var basicInput    = document.getElementById('basic_unit');
+  var collectInput  = document.getElementById('collective_unit');
+  var countInput    = document.getElementById('no_of_basic_units_in_collective_unit');
+  var preview       = document.getElementById('unit-preview');
+
+  function updatePreview() {
+    var basic   = basicInput.value.trim();
+    var collect = collectInput.value.trim();
+    var count   = countInput.value.trim();
+    if (basic && collect && count) {
+      preview.textContent = count + ' ' + basic + ' per ' + collect;
+      preview.style.display = 'block';
+    } else {
+      preview.style.display = 'none';
+    }
+  }
+
+  basicInput.addEventListener('input', updatePreview);
+  collectInput.addEventListener('input', updatePreview);
+  countInput.addEventListener('input', updatePreview);
+})();
+</script>
 
 <?php include './partials/footer.php'; ?>

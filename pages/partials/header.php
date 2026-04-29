@@ -4,7 +4,7 @@
  * Set $pageTitle and $currentPage before including.
  *
  * $currentPage values:
- *   dashboard | register_customer | newdrug | new_order | add_stock | all_stock
+ *   dashboard | active_orders | register_customer | newdrug | new_order | add_stock | all_stock
  *   prescription_history | all_orders | all_customers
  */
 $pageTitle   = $pageTitle   ?? 'Drug 4U';
@@ -48,6 +48,11 @@ function nav_active(string $page, string $current): string {
       <a href="./dashboard.php" class="nav-link<?= nav_active('dashboard', $currentPage) ?>">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         Dashboard
+      </a>
+
+      <a href="./active_orders.php" class="nav-link<?= nav_active('active_orders', $currentPage) ?>">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Active Orders
       </a>
 
       <div class="nav-label">Pharmacy</div>

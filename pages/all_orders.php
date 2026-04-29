@@ -23,6 +23,14 @@ include './partials/header.php';
 <?php if (empty($orders)): ?>
   <div class="empty-state">No orders found.</div>
 <?php else: ?>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="searchInput" type="text" class="search-input" placeholder="Search by order, customer, drug, status…">
+    <span id="searchCount" class="search-count"></span>
+  </div>
+  <div id="noResults" class="empty-state" style="display:none">No orders match your search.</div>
+
   <?php foreach ($orders as $order): ?>
     <div class="order-card">
       <div class="order-card-header">
@@ -48,5 +56,26 @@ include './partials/header.php';
     </div>
   <?php endforeach; ?>
 <?php endif; ?>
+
+<script>
+(function () {
+  var input   = document.getElementById('searchInput');
+  var counter = document.getElementById('searchCount');
+  var noRes   = document.getElementById('noResults');
+  var cards   = document.querySelectorAll('.order-card');
+  if (!input) return;
+  input.addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    var visible = 0;
+    cards.forEach(function (c) {
+      var show = !q || c.textContent.toLowerCase().includes(q);
+      c.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    counter.textContent = q ? visible + ' result' + (visible !== 1 ? 's' : '') : '';
+    noRes.style.display = (q && visible === 0) ? '' : 'none';
+  });
+})();
+</script>
 
 <?php include './partials/footer.php'; ?>

@@ -22,8 +22,13 @@ CREATE TABLE IF NOT EXISTS drug (
 	collective_unit INT,
 	no_of_basic_units_in_collective_unit decimal,
 	age_limit int
-	 
+
 );
+
+-- Run once to update existing databases created with the old INT columns
+ALTER TABLE drug
+  MODIFY COLUMN basic_unit     VARCHAR(100),
+  MODIFY COLUMN collective_unit VARCHAR(100);
 CREATE TABLE IF NOT EXISTS stock (
 	stockID INT  PRIMARY KEY AUTO_INCREMENT,
 	drugID INT,

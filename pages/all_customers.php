@@ -23,6 +23,13 @@ include './partials/header.php';
 <?php if (empty($customers)): ?>
   <div class="empty-state">No customers found. <a href="./register_customer.php">Register a customer</a></div>
 <?php else: ?>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="searchInput" type="text" class="search-input" placeholder="Search by name, postcode, allergy…">
+    <span id="searchCount" class="search-count"></span>
+  </div>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -56,5 +63,24 @@ include './partials/header.php';
     </table>
   </div>
 <?php endif; ?>
+
+<script>
+(function () {
+  var input   = document.getElementById('searchInput');
+  var counter = document.getElementById('searchCount');
+  var rows    = document.querySelectorAll('tbody tr');
+  if (!input) return;
+  input.addEventListener('input', function () {
+    var q = this.value.trim().toLowerCase();
+    var visible = 0;
+    rows.forEach(function (r) {
+      var show = !q || r.textContent.toLowerCase().includes(q);
+      r.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    counter.textContent = q ? visible + ' result' + (visible !== 1 ? 's' : '') : '';
+  });
+})();
+</script>
 
 <?php include './partials/footer.php'; ?>
